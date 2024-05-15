@@ -63,4 +63,10 @@ from crud import *
 #update_customer(2, "The Joker")
 #update_order(1, [get_vehicle(1)], False)
 
+#create_vehicle("Car", 1)
+
+# delete_vehicle(4)
+# delete_customer(2)
+# delete_order(4)
+
 print_all()

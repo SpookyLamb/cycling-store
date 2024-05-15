@@ -128,5 +128,18 @@ def update_order(order_id: int, order_list: list, has_paid: bool):
 # DELETE ************************************
 
 
-def delete():
-    pass
+# def delete_all(): #TABULA RASA
+#     #dangerous!!
+#     pass
+
+def delete_vehicle(vehicle_id: int):
+    vehicle = get_vehicle(vehicle_id)
+    vehicle.delete()
+
+def delete_customer(customer_id: int):
+    customer = get_customer(customer_id)
+    customer.delete()
+
+def delete_order(order_id: int):
+    order = get_order(order_id)
+    order.delete()
