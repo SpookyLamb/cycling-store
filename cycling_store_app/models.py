@@ -41,4 +41,4 @@ class CustomerOrder(models.Model):
     paid = models.BooleanField()
 
     def __str__(self) -> str:
-        return f"ORDER | ID: {self.id} | FROM: ({self.customer}) - ORDERED: ({self.order}) - CREATED ON: {self.created_date} - PAID?: {self.paid}"
+        return f"ORDER | ID: {self.id} | FROM: ({self.customer}) - CREATED ON: {self.created_date} - PAID?: {self.paid}"

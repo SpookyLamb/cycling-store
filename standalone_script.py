@@ -59,7 +59,7 @@ from crud import *
 
 #print_db(False, True, False)
 
-#create_order(get_customer(1), [get_vehicle(0, "Unicycle")], datetime.date.today(), True)
+#create_order(get_customer(1), [get_vehicle(0, "Unicycle"), get_vehicle(0, "Bicycle"), get_vehicle(0, "Tricycle")], datetime.date.today(), True)
 
 print_db(False, False, True)
 

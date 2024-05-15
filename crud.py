@@ -25,7 +25,7 @@ def create_customer(cust_name: str):
 def create_order(the_customer: Customer, ordered_vehicles: list, date_created: datetime.date, been_paid: bool):
     cust_order = CustomerOrder(customer=the_customer, created_date=date_created, paid=been_paid)
     cust_order.save()
-
+    
     cust_order.order.set(ordered_vehicles)
 
 
@@ -52,7 +52,8 @@ def get_customer(cust_id: int) -> Customer:
     return Customer.objects.get(id=cust_id)
 
 def get_order(order_id: int):
-    pass
+    #gets an order by ID ONLY
+    return CustomerOrder.objects.get(id=order_id)
 
 def print_all():
     print_db(True, True, True)
@@ -71,6 +72,10 @@ def print_db(print_vehicles: bool, print_customers: bool, print_orders: bool):
     if print_orders:
         for order in orders:
             print(order)
+            print("***")
+            for vehicle in order.order.all():
+                print(vehicle)
+            print("***")
 
 
 # UPDATE
