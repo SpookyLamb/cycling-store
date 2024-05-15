@@ -14,19 +14,19 @@ print('SCRIPT START *************************')
 
 # ===========================================================================================================
 
-# Must Have
-# ● Have functions in a script to perform CRUD on all models
+# Must Have (DONE)
+# ● Have functions in a script to perform CRUD on all models (DONE)
 
-# Should Have
-# ● Menu of options:
-    # ○ Order more Vehicles for the store (increase number_in_stock)
-    # ○ Create a new customer
-    # ○ Create a customer order
-        # ■ Removes item from stock
-    # ○ Display inventory
-    # ○ Cancel a customer order
-        # ■ Returns item to stock
-    # ○ Mark an order paid
+# Should Have (DONE)
+# ● Menu of options: (DONE)
+    # ○ Order more Vehicles for the store (increase number_in_stock) (DONE)
+    # ○ Create a new customer (DONE)
+    # ○ Create a customer order (DONE)
+        # ■ Removes item from stock (DONE)
+    # ○ Display inventory (DONE)
+    # ○ Cancel a customer order (DONE)
+        # ■ Returns item to stock (DONE)
+    # ○ Mark an order paid (DONE)
 
 # Could Have
 # ● Extend models with more functionality

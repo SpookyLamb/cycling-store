@@ -22,11 +22,14 @@ def create_customer(cust_name: str):
     customer = Customer(name=cust_name)
     customer.save()
 
-def create_order(the_customer: Customer, ordered_vehicles: list, date_created: datetime.date, been_paid: bool):
+def create_order(the_customer: Customer, ordered_vehicles: list, been_paid: bool = False):
+    date_created = datetime.date.today()
     cust_order = CustomerOrder(customer=the_customer, created_date=date_created, paid=been_paid)
     cust_order.save()
     
     cust_order.order.set(ordered_vehicles)
+
+    return cust_order
 
 
 # READ ********************************
@@ -62,7 +65,7 @@ def get_order(order_id: int):
 def print_all():
     print_db(True, True, True)
 
-def print_db(print_vehicles: bool, print_customers: bool, print_orders: bool):
+def print_db(print_vehicles: bool = False, print_customers: bool = False, print_orders: bool = False):
     vehicles = Vehicle.objects.all()
     customers = Customer.objects.all()
     orders = CustomerOrder.objects.all()
@@ -88,6 +91,13 @@ def print_db(print_vehicles: bool, print_customers: bool, print_orders: bool):
 # UPDATE ****************************************
 
 
+def adjust_inventory(vehicle_id: int, adjustment: int):
+    vehicle = get_vehicle(vehicle_id)
+    stock = vehicle.number_in_stock
+    stock += adjustment
+
+    update_vehicle(vehicle_id, stock)
+
 def update_vehicle(vehicle_id: int, in_stock: int, name: str = ""):
     #updates a vehicle BY ID
     vehicle = get_vehicle(vehicle_id)
@@ -96,8 +106,6 @@ def update_vehicle(vehicle_id: int, in_stock: int, name: str = ""):
     if name:
         vehicle.type = name
     vehicle.save()
-    
-    print("Updated vehicle.")
 
 def update_customer(cust_id: int, update_name: str):
     #updates a customer BY ID
@@ -106,8 +114,6 @@ def update_customer(cust_id: int, update_name: str):
     if update_name:
         customer.name = update_name
     customer.save()
-    
-    print("Updated customer.")
 
 def update_order(order_id: int, order_list: list, has_paid: bool):
     #updates a customer's order BY ID
@@ -121,9 +127,8 @@ def update_order(order_id: int, order_list: list, has_paid: bool):
     order.paid = has_paid
     order.save()
 
-    order.order.set(order_list)
-    print("Updated order.")
-
+    if len(order_list) > 0:
+        order.order.set(order_list)
 
 # DELETE ************************************
 
