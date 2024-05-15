@@ -43,7 +43,24 @@ print('SCRIPT START *************************')
 
 # ===========================================================================================================
 
+import datetime
 from cycling_store_app.models import *
 from crud import *
 
-print_all()
+# create_vehicle("Unicycle", 5)
+# create_vehicle("Bicycle", 30)
+# create_vehicle("Tricycle", 10)
+
+#print_db(True, False, False)
+
+#print(get_vehicle(0, "Unicycle"))
+
+#create_customer("Maddie Carlson")
+
+#print_db(False, True, False)
+
+#create_order(get_customer(1), [get_vehicle(0, "Unicycle")], datetime.date.today(), True)
+
+print_db(False, False, True)
+
+#print_all()
