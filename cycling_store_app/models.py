@@ -37,7 +37,7 @@ class Customer(models.Model):
 class CustomerOrder(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     order = models.ManyToManyField(Vehicle)
-    created_date = models.DateField()
+    created_date = models.DateTimeField()
     paid = models.BooleanField()
 
     def __str__(self) -> str:
