@@ -50,17 +50,17 @@ from crud import *
 # create_vehicle("Unicycle", 5)
 # create_vehicle("Bicycle", 30)
 # create_vehicle("Tricycle", 10)
-
 #print_db(True, False, False)
 
-#print(get_vehicle(0, "Unicycle"))
-
 #create_customer("Maddie Carlson")
-
+#create_customer("Jared Leto")
 #print_db(False, True, False)
 
 #create_order(get_customer(1), [get_vehicle(0, "Unicycle"), get_vehicle(0, "Bicycle"), get_vehicle(0, "Tricycle")], datetime.date.today(), True)
+#print_db(False, False, True)
 
-print_db(False, False, True)
+#update_vehicle(3, 5)
+#update_customer(2, "The Joker")
+#update_order(1, [get_vehicle(1)], False)
 
-#print_all()
+print_all()

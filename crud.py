@@ -11,7 +11,7 @@ import datetime
 from cycling_store_app.models import *
 
 
-# CREATE
+# CREATE ********************************
 
 
 def create_vehicle(type_name: str, in_stock: int):
@@ -29,7 +29,7 @@ def create_order(the_customer: Customer, ordered_vehicles: list, date_created: d
     cust_order.order.set(ordered_vehicles)
 
 
-# READ
+# READ ********************************
 
 
 def customers_by_name(cust_name: str):
@@ -38,22 +38,26 @@ def customers_by_name(cust_name: str):
     for customer in customers:
         print(customer)
 
-def get_vehicle(vehicle_id: int, name: str = ""):
+def vehicle_by_name(name: str = ""):
+    #grab vehicle by name, not id
+    vehicle = Vehicle.objects.filter(type=name).first()
+    print(vehicle)
+    return vehicle.id
 
-    if name: #grab vehicle by name, not id
-        vehicle = Vehicle.objects.filter(type=name).first()
-    else: #grab vehicle by id
-        vehicle = Vehicle.objects.filter(id=vehicle_id).first()
 
+def get_vehicle(vehicle_id: int):
+    #grab vehicle by ID ONLY, use vehicle_by_name to grab a readout and find the ID
+    vehicle = Vehicle.objects.filter(id=vehicle_id).first()
     return vehicle
 
 def get_customer(cust_id: int) -> Customer:
-    #gets a customer by ID ONLY, use customers_by_name() to grab a readout and find the ID
+    #gets a customer by ID ONLY, use customers_by_name() to see a readout and grab the ID
     return Customer.objects.get(id=cust_id)
 
 def get_order(order_id: int):
     #gets an order by ID ONLY
     return CustomerOrder.objects.get(id=order_id)
+
 
 def print_all():
     print_db(True, True, True)
@@ -66,9 +70,11 @@ def print_db(print_vehicles: bool, print_customers: bool, print_orders: bool):
     if print_vehicles:
         for vehicle in vehicles:
             print(vehicle)
+        print("")
     if print_customers:
         for customer in customers:
             print(customer)
+        print("")
     if print_orders:
         for order in orders:
             print(order)
@@ -76,16 +82,50 @@ def print_db(print_vehicles: bool, print_customers: bool, print_orders: bool):
             for vehicle in order.order.all():
                 print(vehicle)
             print("***")
+        print("")    
 
 
-# UPDATE
+# UPDATE ****************************************
 
 
-def update():
-    pass
+def update_vehicle(vehicle_id: int, in_stock: int, name: str = ""):
+    #updates a vehicle BY ID
+    vehicle = get_vehicle(vehicle_id)
+
+    vehicle.number_in_stock = in_stock
+    if name:
+        vehicle.type = name
+    vehicle.save()
+    
+    print("Updated vehicle.")
+
+def update_customer(cust_id: int, update_name: str):
+    #updates a customer BY ID
+    customer = get_customer(cust_id)
+    
+    if update_name:
+        customer.name = update_name
+    customer.save()
+    
+    print("Updated customer.")
+
+def update_order(order_id: int, order_list: list, has_paid: bool):
+    #updates a customer's order BY ID
+    #can't change WHO ordered something, that'd be stupid!
+    #can change what they ordered, though
+    #updates the created date to the CURRENT DAY automatically
+
+    order = get_order(order_id)
+    
+    order.created_date = datetime.date.today()
+    order.paid = has_paid
+    order.save()
+
+    order.order.set(order_list)
+    print("Updated order.")
 
 
-# DELETE
+# DELETE ************************************
 
 
 def delete():
