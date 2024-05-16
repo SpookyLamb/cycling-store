@@ -24,6 +24,7 @@ def create_menu():
         print("")
 
         print("OPTIONS: ")
+        print("create-stock [VEHICLE TYPE] [NUMBER IN STOCK] [PRICE] [COLOR]")
         print("create-customer [CUSTOMER NAME]")
         print("create-order [CUSTOMER ID] [VEHICLE ID]")
         print("back")
@@ -36,6 +37,11 @@ def create_menu():
         try:
             if user_input.startswith("create-customer"):
                 name = array[1]
+
+                if len(array) > 2: #additional names
+                    for i in range(2, len(array)):
+                        name = name + " " + array[i]
+
                 create_customer(name)
                 print("Created customer!")
             
@@ -49,6 +55,15 @@ def create_menu():
                 create_order(customer, [vehicle], False)
                 adjust_inventory(vehicle_id, -1)
                 print("Created order!")
+            
+            elif user_input.startswith("create-stock"):
+                name = array[1]
+                in_stock = array[2]
+                price = array[3]
+                color = array[4]
+
+                create_vehicle(name, in_stock, price, color)
+                print("Created new vehicle!")
 
             elif user_input == "back":
                 print("Going back!")
@@ -115,12 +130,46 @@ def update_menu():
         print("OPTIONS: ")
         print("order-vehicles [VEHICLE ID] [AMOUNT TO ORDER]")
         print("mark-order-paid [ORDER ID]")
+        print("update-stock [VEHICLE ID] [AMOUNT IN STOCK] [PRICE] [COLOR] [TITLE]")
+        print("update-customer [CUSTOMER ID] [NEW NAME]")
+        print("update-order [ORDER ID] [ORDER LIST], [BEEN PAID]")
         print("back")
         print("")
 
         user_input = input("What would you like to update today? ")
         user_input = user_input.strip()
-        array = user_input.split(" ")
+
+        if not user_input.startswith("update-order"):
+            array = user_input.split(" ")
+        else: #we have to do something more complicated for an updated order, since that already takes a list as part of its args
+            try:
+                #command should look something like "update-order 1 [1, 2, 3] no"
+                array = []
+
+                #need to find the left bracket, right bracket, and then grab everything between
+                #we can then delete that from the original string and split it to get processable data
+                left_index = user_input.find("[")
+                right_index = user_input.rfind("]")
+                list_string = ""
+
+                for i in range(left_index + 1, right_index):
+                    list_string += user_input[i]
+                
+                user_input = user_input.replace("[" + list_string + "] ", "") #strip list from user input
+                list_string = list_string.replace(",", "") #strip all commas from list
+                order_list = list_string.split(" ") #grab a real list
+
+                for i in range(len(order_list)):
+                    order_list[i] = int(order_list[i]) #convert all strings in this list to numbers
+                
+                array = user_input.split(" ") #get our elements
+                array.append(order_list) #append list to create a nest, do not concat
+                array[2] = array[2].upper() #set paid status to upper
+
+                #end list is [command, order id, paid status, [nested order]]
+            except:
+                exception()
+                continue #skip the rest of this loop
 
         try:
             if user_input.startswith("order-vehicles"):
@@ -133,6 +182,39 @@ def update_menu():
                 order_id = int(array[1])
                 update_order(order_id, [], True) #empty array means DON'T change the order
                 print("Order marked as paid!")
+
+            elif user_input.startswith("update-stock"):
+                vehicle_id = int(array[1])
+                amount_in_stock = int(array[2])
+                price = float(array[3])
+                color = array[4]
+                vehicle_name = array[5]
+
+                update_vehicle(vehicle_id, amount_in_stock, price, color, vehicle_name)
+                print("Updated vehicle!")
+            
+            elif user_input.startswith("update-customer"):
+                customer_id = int(array[1])
+                new_name = array[2]
+
+                if len(array) > 3: #additional names
+                    for i in range(3, len(array)):
+                        new_name = new_name + " " + array[i]
+
+                update_customer(customer_id, new_name)
+                print("Updated customer info!")
+            
+            elif user_input.startswith("update-order"):
+                #list should be [command, order id, paid status, [nested order]]
+                order_id = array[1]
+                paid = False
+                order_list = array[3] #nested list
+
+                if array[2] == "YES" or array[2] == "Y" or array[2] == "TRUE":
+                    paid = True
+                
+                update_order(order_id, order_list, paid)
+                print("Updated order information!")
             
             elif user_input == "back":
                 print("Going back!")
@@ -155,6 +237,8 @@ def delete_menu():
 
         print("OPTIONS: ")
         print("cancel-order [ORDER ID]")
+        print("delete-customer [CUSTOMER ID]")
+        print("delete-stock [VEHICLE ID]")
         print("back")
         print("")
 
@@ -174,6 +258,16 @@ def delete_menu():
 
                 delete_order(order_id)
                 print("Cancelled and deleted order!")
+            
+            elif user_input.startswith("delete-customer"):
+                customer_id = int(array[1])
+                delete_customer(customer_id)
+                print("Deleted customer!")
+
+            elif user_input.startswith("delete-stock"):
+                vehicle_id = int(array[1])
+                delete_vehicle(vehicle_id)
+                print("Deleted stock!")
 
             elif user_input == "back":
                 print("Going back!")

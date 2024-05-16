@@ -14,8 +14,8 @@ from cycling_store_app.models import *
 # CREATE ********************************
 
 
-def create_vehicle(type_name: str, in_stock: int):
-    vehicle = Vehicle(type=type_name, number_in_stock=in_stock)
+def create_vehicle(type_name: str, in_stock: int, price: float, color: str):
+    vehicle = Vehicle(type=type_name, number_in_stock=in_stock, price=price, color=color)
     vehicle.save()
 
 def create_customer(cust_name: str):
