@@ -29,10 +29,10 @@ print('SCRIPT START *************************')
     # ○ Mark an order paid (DONE)
 
 # Could Have
-# ● Extend models with more functionality
-    # ○ price, different Vehicle types, color, etc.
+# ● Extend models with more functionality (DONE)
+    # ○ price, different Vehicle types, color, etc. (DONE)
 # ● Extend menu of options to handle full CRUD options for each model
-# ● Nest menu options for better user flow
+# ● Nest menu options for better user flow (DONE)
 # ● Display order history for a customer
 
 # Wish List

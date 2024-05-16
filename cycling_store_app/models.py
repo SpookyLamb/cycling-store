@@ -9,6 +9,8 @@ from django.db import models
 # Vehicle
 # ○ type: unicycle, bicycle, tricycle
 # ○ number_in_stock
+# ○ price
+# ○ color
 
 # Customer
 # ○ name
@@ -24,6 +26,8 @@ from django.db import models
 class Vehicle(models.Model):
     type = models.CharField(max_length=10)
     number_in_stock = models.IntegerField()
+    price = models.FloatField(default=1.0)
+    color = models.CharField(max_length=15, default="black")
 
     def __str__(self) -> str:
         return f"VEHICLE | TYPE: {self.type} - STOCK: {self.number_in_stock} - ID: {self.id}"

@@ -10,30 +10,72 @@ import datetime
 from cycling_store_app.models import *
 from crud import *
 
-def main_menu():
+def exception():
+    input("ERROR! Bad input! Check your input and press enter when you're ready to try again!")
+
+def create_menu():
 
     while True:
 
         print("")
-        print("***********")
-        print(" MAIN MENU ")
-        print("***********")
+        print("*****************")
+        print(" DATABASE CREATE ")
+        print("*****************")
+        print("")
+
+        print("OPTIONS: ")
+        print("create-customer [CUSTOMER NAME]")
+        print("create-order [CUSTOMER ID] [VEHICLE ID]")
+        print("back")
+        print("")
+
+        user_input = input("What would you like to create today? ")
+        user_input = user_input.strip()
+        array = user_input.split(" ")
+
+        try:
+            if user_input.startswith("create-customer"):
+                name = array[1]
+                create_customer(name)
+                print("Created customer!")
+            
+            elif user_input.startswith("create-order"):
+                customer_id = int(array[1])
+                vehicle_id = int(array[2])
+
+                customer = get_customer(customer_id)
+                vehicle = get_vehicle(vehicle_id)
+
+                create_order(customer, [vehicle], False)
+                adjust_inventory(vehicle_id, -1)
+                print("Created order!")
+
+            elif user_input == "back":
+                print("Going back!")
+                break
+
+            else:
+                exception()
+        except:
+            exception()
+
+def read_menu():
+    
+    while True:
+        print("")
+        print("***************")
+        print(" DATABASE READ ")
+        print("***************")
         print("")
 
         print("OPTIONS: ")
         print("display-inventory")
         print("view-customers")
         print("view-all-orders")
-        print("order-vehicles [VEHICLE ID] [AMOUNT TO ORDER]")
-        print("create-customer [CUSTOMER NAME]")
-        print("create-order [CUSTOMER ID] [VEHICLE ID]")
-        print("cancel-order [ORDER ID]")
-        print("mark-order-paid [ORDER ID]")
-        print("help")
-        print("quit")
+        print("back")
         print("")
 
-        user_input = input("What would you like to do today? ")
+        user_input = input("What would you like to read today? ")
         user_input = user_input.strip()
         array = user_input.split(" ")
 
@@ -49,30 +91,79 @@ def main_menu():
             elif user_input == "view-all-orders":
                 print_db(False, False, True)
                 input("Press enter to continue...")
+            
+            elif user_input == "back":
+                print("Going back!")
+                break
 
-            elif user_input.startswith("order-vehicles"):
+            else:
+                exception()
+        except:
+            exception()
+
+
+def update_menu():
+
+    while True:
+
+        print("")
+        print("*****************")
+        print(" DATABASE UPDATE ")
+        print("*****************")
+        print("")
+
+        print("OPTIONS: ")
+        print("order-vehicles [VEHICLE ID] [AMOUNT TO ORDER]")
+        print("mark-order-paid [ORDER ID]")
+        print("back")
+        print("")
+
+        user_input = input("What would you like to update today? ")
+        user_input = user_input.strip()
+        array = user_input.split(" ")
+
+        try:
+            if user_input.startswith("order-vehicles"):
                 vehicle_id = int(array[1])
                 amount = int(array[2])
                 adjust_inventory(vehicle_id, amount)
                 print("Ordered inventory!")
             
-            elif user_input.startswith("create-customer"):
-                name = array[1]
-                create_customer(name)
-                print("Created customer!")
+            elif user_input.startswith("mark-order-paid"):
+                order_id = int(array[1])
+                update_order(order_id, [], True) #empty array means DON'T change the order
+                print("Order marked as paid!")
             
-            elif user_input.startswith("create-order"):
-                customer_id = int(array[1])
-                vehicle_id = int(array[2])
+            elif user_input == "back":
+                print("Going back!")
+                break
 
-                customer = get_customer(customer_id)
-                vehicle = get_vehicle(vehicle_id)
+            else:
+                exception()
+        except:
+            exception()
 
-                create_order(customer, [vehicle], False)
-                adjust_inventory(vehicle_id, -1)
-                print("Created order!")
-            
-            elif user_input.startswith("cancel-order"):
+def delete_menu():
+    
+    while True:
+
+        print("")
+        print("*****************")
+        print(" DATABASE DELETE ")
+        print("*****************")
+        print("")
+
+        print("OPTIONS: ")
+        print("cancel-order [ORDER ID]")
+        print("back")
+        print("")
+
+        user_input = input("What would you like to delete today? ")
+        user_input = user_input.strip()
+        array = user_input.split(" ")
+
+        try:
+            if user_input.startswith("cancel-order"):
                 order_id = int(array[1])
                 order = get_order(order_id)
 
@@ -83,19 +174,63 @@ def main_menu():
 
                 delete_order(order_id)
                 print("Cancelled and deleted order!")
+
+            elif user_input == "back":
+                print("Going back!")
+                break
+
+            else:
+                exception()
+        except:
+            exception()
+
+def main_menu():
+
+    while True:
+
+        print("")
+        print("***********")
+        print(" MAIN MENU ")
+        print("***********")
+        print("")
+
+        print("OPTIONS: ")
+        print("create")
+        print("read")
+        print("update")
+        print("delete")
+        print("help")
+        print("quit")
+        print("")
+
+        user_input = input("What would you like to do today? ")
+        user_input = user_input.strip()
+        array = user_input.split(" ")
+
+        try:
+
+            if user_input == "create":
+                create_menu()
             
-            elif user_input.startswith("mark-order-paid"):
-                order_id = int(array[1])
-                update_order(order_id, [], True) #empty array means DON'T change the order
-                print("Order marked as paid!")
+            elif user_input == "read":
+                read_menu()
+            
+            elif user_input == "update":
+                update_menu()
+            
+            elif user_input == "delete":
+                delete_menu()
             
             elif user_input == "help":
                 pass
+
+            elif user_input == "quit":
+                print("Quitting!")
+                break
+
+            else:
+                exception()
         except:
-            input("ERROR! Bad input! Check your input and press enter when you're ready to try again!")
-        
-        if user_input == "quit":
-            print("Quitting!")
-            break
+            exception()
 
 main_menu()

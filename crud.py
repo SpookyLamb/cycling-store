@@ -47,7 +47,6 @@ def vehicle_by_name(name: str = ""):
     print(vehicle)
     return vehicle.id
 
-
 def get_vehicle(vehicle_id: int):
     #grab vehicle by ID ONLY, use vehicle_by_name to grab a readout and find the ID
     vehicle = Vehicle.objects.filter(id=vehicle_id).first()
@@ -60,7 +59,6 @@ def get_customer(cust_id: int) -> Customer:
 def get_order(order_id: int):
     #gets an order by ID ONLY
     return CustomerOrder.objects.get(id=order_id)
-
 
 def print_all():
     print_db(True, True, True)
@@ -98,13 +96,18 @@ def adjust_inventory(vehicle_id: int, adjustment: int):
 
     update_vehicle(vehicle_id, stock)
 
-def update_vehicle(vehicle_id: int, in_stock: int, name: str = ""):
+def update_vehicle(vehicle_id: int, in_stock: int, price: float = 0.0, color: str = "", name: str = ""):
     #updates a vehicle BY ID
     vehicle = get_vehicle(vehicle_id)
-
     vehicle.number_in_stock = in_stock
+
     if name:
         vehicle.type = name
+    if price > 0:
+        vehicle.price = price
+    if color:
+        vehicle.color = color
+
     vehicle.save()
 
 def update_customer(cust_id: int, update_name: str):
@@ -130,12 +133,28 @@ def update_order(order_id: int, order_list: list, has_paid: bool):
     if len(order_list) > 0:
         order.order.set(order_list)
 
+
 # DELETE ************************************
 
 
-# def delete_all(): #TABULA RASA
-#     #dangerous!!
-#     pass
+def delete_all(): #TABULA RASA
+    #dangerous!!
+    vehicles = Vehicle.objects.all()
+    customers = Customer.objects.all()
+    orders = CustomerOrder.objects.all()
+
+    user_input = input("Are you SURE you want to delete the entire database? ").upper()
+     
+    if user_input == "Y" or user_input == "YES":
+        for vehicle in vehicles:
+            vehicle.delete()
+        for customer in customers:
+            customer.delete()
+        for order in orders:
+            order.delete()
+    else:
+        print("Phew!")
+        return
 
 def delete_vehicle(vehicle_id: int):
     vehicle = get_vehicle(vehicle_id)
