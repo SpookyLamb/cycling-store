@@ -87,6 +87,7 @@ def read_menu():
         print("display-inventory")
         print("view-customers")
         print("view-all-orders")
+        print("view-order-history [CUSTOMER ID]")
         print("back")
         print("")
 
@@ -107,6 +108,17 @@ def read_menu():
                 print_db(False, False, True)
                 input("Press enter to continue...")
             
+            elif user_input.startswith("view-order-history"):
+                customer_id = array[1]
+                customer = get_customer(customer_id)
+                orders = CustomerOrder.objects.all()
+
+                for order in orders:
+                    if order.customer == customer:
+                        print_order(order)
+                
+                input("Press enter to continue...")
+
             elif user_input == "back":
                 print("Going back!")
                 break

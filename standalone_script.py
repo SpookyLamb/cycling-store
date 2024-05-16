@@ -28,12 +28,12 @@ print('SCRIPT START *************************')
         # ■ Returns item to stock (DONE)
     # ○ Mark an order paid (DONE)
 
-# Could Have
+# Could Have (DONE)
 # ● Extend models with more functionality (DONE)
     # ○ price, different Vehicle types, color, etc. (DONE)
-# ● Extend menu of options to handle full CRUD options for each model
+# ● Extend menu of options to handle full CRUD options for each model (DONE)
 # ● Nest menu options for better user flow (DONE)
-# ● Display order history for a customer
+# ● Display order history for a customer (DONE)
 
 # Wish List
 # ● Add more models to track and manage vehicle components

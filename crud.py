@@ -83,8 +83,16 @@ def print_db(print_vehicles: bool = False, print_customers: bool = False, print_
             for vehicle in order.order.all():
                 print(vehicle)
             print("***")
+            print("")
         print("")    
 
+def print_order(order):
+    print(order)
+    print("***")
+    for vehicle in order.order.all():
+        print(vehicle)
+    print("***")
+    print("")
 
 # UPDATE ****************************************
 
