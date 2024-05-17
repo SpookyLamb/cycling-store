@@ -13,6 +13,30 @@ from crud import *
 def exception():
     input("ERROR! Bad input! Check your input and press enter when you're ready to try again!")
 
+def process_list_input(user_input: str):
+    array = []
+
+    #need to find the left bracket, right bracket, and then grab everything between
+    #we can then delete that from the original string and split it to get processable data
+    left_index = user_input.find("[")
+    right_index = user_input.rfind("]")
+    list_string = ""
+
+    for i in range(left_index + 1, right_index):
+        list_string += user_input[i]
+    
+    user_input = user_input.replace("[" + list_string + "] ", "") #strip list from user input
+    list_string = list_string.replace(",", "") #strip all commas from list
+    order_list = list_string.split(" ") #grab a real list
+
+    for i in range(len(order_list)):
+        order_list[i] = int(order_list[i]) #convert all strings in this list to numbers
+    
+    array = user_input.split(" ") #get our elements
+    array.append(order_list) #append list to create a nest, do not concat
+
+    return array
+
 def create_menu():
 
     while True:
@@ -26,13 +50,17 @@ def create_menu():
         print("OPTIONS: ")
         print("create-stock [VEHICLE TYPE] [NUMBER IN STOCK] [PRICE] [COLOR]")
         print("create-customer [CUSTOMER NAME]")
-        print("create-order [CUSTOMER ID] [VEHICLE ID]")
+        print("create-order [CUSTOMER ID] [ORDER LIST]")
         print("back")
         print("")
 
         user_input = input("What would you like to create today? ")
         user_input = user_input.strip()
-        array = user_input.split(" ")
+
+        if user_input.startswith("create-order"):
+            array = process_list_input(user_input + " ") #trailing space needed for compatability with update-order
+        else:
+            array = user_input.split(" ")
 
         try:
             if user_input.startswith("create-customer"):
@@ -47,13 +75,13 @@ def create_menu():
             
             elif user_input.startswith("create-order"):
                 customer_id = int(array[1])
-                vehicle_id = int(array[2])
+                order_list = array.pop()
 
                 customer = get_customer(customer_id)
-                vehicle = get_vehicle(vehicle_id)
+                for vehicle_id in order_list:
+                    adjust_inventory(vehicle_id, -1)
 
-                create_order(customer, [vehicle], False)
-                adjust_inventory(vehicle_id, -1)
+                create_order(customer, order_list, False)
                 print("Created order!")
             
             elif user_input.startswith("create-stock"):
@@ -156,29 +184,8 @@ def update_menu():
         else: #we have to do something more complicated for an updated order, since that already takes a list as part of its args
             try:
                 #command should look something like "update-order 1 [1, 2, 3] no"
-                array = []
-
-                #need to find the left bracket, right bracket, and then grab everything between
-                #we can then delete that from the original string and split it to get processable data
-                left_index = user_input.find("[")
-                right_index = user_input.rfind("]")
-                list_string = ""
-
-                for i in range(left_index + 1, right_index):
-                    list_string += user_input[i]
-                
-                user_input = user_input.replace("[" + list_string + "] ", "") #strip list from user input
-                list_string = list_string.replace(",", "") #strip all commas from list
-                order_list = list_string.split(" ") #grab a real list
-
-                for i in range(len(order_list)):
-                    order_list[i] = int(order_list[i]) #convert all strings in this list to numbers
-                
-                array = user_input.split(" ") #get our elements
-                array.append(order_list) #append list to create a nest, do not concat
+                array = process_list_input(user_input)
                 array[2] = array[2].upper() #set paid status to upper
-
-                #end list is [command, order id, paid status, [nested order]]
             except:
                 exception()
                 continue #skip the rest of this loop
@@ -305,7 +312,6 @@ def main_menu():
         print("read")
         print("update")
         print("delete")
-        print("help")
         print("quit")
         print("")
 
@@ -326,9 +332,6 @@ def main_menu():
             
             elif user_input == "delete":
                 delete_menu()
-            
-            elif user_input == "help":
-                pass
 
             elif user_input == "quit":
                 print("Quitting!")
