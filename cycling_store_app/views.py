@@ -6,8 +6,8 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
-import copy
-import json
+# import copy
+# import json
 
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
@@ -85,8 +85,8 @@ class SalesViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
         # Total number of vehicles (DONE)
         # Number of vehicles by type (DONE)
         # Total number of customers (DONE)
-        # Number of customers who have purchased a vehicle
-        # Average vehicles per customer
+        # Number of customers who have purchased a vehicle (DONE)
+        # Average vehicles per customer (DONE)
 
     queryset = Vehicle.objects.all()
 
@@ -108,18 +108,33 @@ class SalesViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
         customer_list = list(queryset)
         customer_count = len(customer_list) #grab customer count
 
+        #sum customers who have purchased at least one vehicle
+        #can be done by matching them to orders
+        queryset = CustomerOrder.objects.all()
+        order_list = list(queryset)
+        customers_with_orders = []
+        vehicles_sold = 0 #a secret tool that will help us later
+
+        for order in order_list:
+            customer = order.customer
+            if not customer in customers_with_orders:
+                customers_with_orders.append(customer)
+            
+            vehicles_ordered = order.order.values_list('pk', flat=True) #grabs a queryset with vehicle ids
+            vehicles_ordered = list(vehicles_ordered) #turn it into a list
+            vehicles_sold += len(vehicles_ordered) #add length
+        
+        customer_with_orders_count = len(customers_with_orders)
+        
+        #average vehicles purchased per customer
+        avg_purchases = vehicles_sold / customer_count
+
         dictionary = {
             "Vehicle Count": vehicle_count,
             "Vehicles By Type": vehicles_by_type,
             "Customer Count": customer_count,
-
+            "Customers With Purchases": customer_with_orders_count,
+            "Average Purchases Per Customer": avg_purchases,
         }
-        data = json.dumps(dictionary)
 
-        return Response(data)
-
-    # def retrieve(self, request, pk=None):
-    #     queryset = Vehicle.objects.all()
-    #     user = get_object_or_404(queryset, pk=pk)
-    #     serializer = VehicleSerializer(user)
-    #     return Response(serializer.data)
+        return Response(dictionary)
