@@ -5,51 +5,7 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
-# class InstructorViewSet(viewsets.ModelViewSet):
-#     queryset = Instructor.objects.all()
-#     serializer_class = InstructorSerializer
-
-#     def create(self, request):
-#         mutable_data_copy = request.data.copy()
-#         mutable_data_copy['name'] = f'Professor {mutable_data_copy['name']}'
-        
-#         serializer = InstructorSerializer(data = mutable_data_copy)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-
-#         return Response(serializer.data)
-
-# class CourseViewSet(viewsets.ModelViewSet):
-#     queryset = Course.objects.all()
-#     serializer_class = CourseSerializer
-
-#     def retrieve(self, request, pk=None):
-#         course = Course.objects.get(pk=pk)
-#         course_serializer = CourseSerializer(course)
-#         data = course_serializer.data
-#         data['instructor_incantation'] = some_function(course)
-#         return Response(data)
-    
-#     def update(self, request, pk=None):
-#         course = Course.objects.get(pk=pk)
-#         course_serializer = CourseSerializer(data = request.data)
-#         course_serializer.is_valid(raise_exception=True)
-#         course_serializer.save()
-        
-#         instructor = Instructor.objects.get(id = course.instructor.id)
-#         if (instructor.id == 1):
-#             instructor.name = instructor.name + " " + course.name
-#             instructor.save()
-
-#         return Response(course_serializer.data)
-    
-#     def destroy(self, request, pk=None):
-#         course = self.get_object()
-#         self.perform_destroy(course)
-#         return Response()
-
-# def some_function(obj):
-#     return "Abracadabra"
+import copy
 
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
@@ -62,4 +18,63 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = CustomerOrder.objects.all()
     serializer_class = OrderSerializer
+
+    def create(self, request):
+        #remove vehicles from inventory
+
+        order_list = request.data.getlist('order')
+
+        for vehicle_id in order_list:
+            vehicle = Vehicle.objects.get(id=vehicle_id)
+            vehicle.number_in_stock -= 1
+            vehicle.save()
+        
+        serializer = OrderSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
+    
+    def update(self, request, pk=None):
+        #add/remove vehicles to/from inventory
+        #combination of what is done for destroy and create
+
+        #grab the original order list
+        order = self.get_object()
+        og_order_list = order.order.values_list('pk', flat=True) #grabs a queryset with vehicle ids
+        og_order_list = list(og_order_list) #turn it into a list
+
+        for vehicle_id in og_order_list: #add all of those vehicles back to inventory
+            vehicle = Vehicle.objects.get(id=vehicle_id)
+            vehicle.number_in_stock += 1
+            vehicle.save()
+
+        #grab the new order list, remove the vehicles in it
+        order_list = request.data.getlist('order')
+
+        for vehicle_id in order_list:
+            vehicle = Vehicle.objects.get(id=vehicle_id)
+            vehicle.number_in_stock -= 1
+            vehicle.save()
+        
+        serializer = OrderSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
+    
+    def destroy(self, request, pk=None):
+        #add vehicles back to inventory
+
+        order = self.get_object()
+        order_list = order.order.values_list('pk', flat=True) #grabs a queryset with vehicle ids
+        order_list = list(order_list) #turn it into a list
+
+        for vehicle_id in order_list:
+            vehicle = Vehicle.objects.get(id=vehicle_id)
+            vehicle.number_in_stock += 1
+            vehicle.save()
+        
+        self.perform_destroy(order)
+        return Response()
 
