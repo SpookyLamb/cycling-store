@@ -1,11 +1,13 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+from rest_framework import mixins, viewsets
 from .models import *
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
 import copy
+import json
 
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
@@ -78,3 +80,46 @@ class OrderViewSet(viewsets.ModelViewSet):
         self.perform_destroy(order)
         return Response()
 
+class SalesViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    #displays the following information:
+        # Total number of vehicles (DONE)
+        # Number of vehicles by type (DONE)
+        # Total number of customers (DONE)
+        # Number of customers who have purchased a vehicle
+        # Average vehicles per customer
+
+    queryset = Vehicle.objects.all()
+
+    def list(self, request):
+        #needs to return JSON data via a Response() class
+        #this data can be manipulated to do what we want
+
+        queryset = Vehicle.objects.all() 
+        vehicle_list = list(queryset)
+        
+        vehicle_count = 0 #total vehicles
+        vehicles_by_type = {} #total vehicles by TYPE
+
+        for vehicle in vehicle_list:
+            vehicle_count += vehicle.number_in_stock
+            vehicles_by_type[vehicle.type] = vehicle.number_in_stock
+        
+        queryset = Customer.objects.all()
+        customer_list = list(queryset)
+        customer_count = len(customer_list) #grab customer count
+
+        dictionary = {
+            "Vehicle Count": vehicle_count,
+            "Vehicles By Type": vehicles_by_type,
+            "Customer Count": customer_count,
+
+        }
+        data = json.dumps(dictionary)
+
+        return Response(data)
+
+    # def retrieve(self, request, pk=None):
+    #     queryset = Vehicle.objects.all()
+    #     user = get_object_or_404(queryset, pk=pk)
+    #     serializer = VehicleSerializer(user)
+    #     return Response(serializer.data)
